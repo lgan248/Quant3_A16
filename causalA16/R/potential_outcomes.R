@@ -19,3 +19,26 @@ simulate_potential_outcomes <- function(n,
   attr(DATA, "seed") <- seed
   DATA
 }
+
+#' Simulate a simple experiment
+#'
+#' Simulates potential outcomes and adds a treatment variable
+#' @param n number of individuals
+#' @param prob_treatment probability of treatment
+#' @param seed integer value for random seed
+#' @return data.table with potential outcomes
+#' @import data.table
+#' @export
+simulate_simple_experiment <- function(n, prob_treatment = .5,
+                                       seed = sample.int(.Machine$integer.max, 1))
+{
+  set.seed(seed)
+  DATA <- simulate_potential_outcomes(n, seed = seed)
+  DATA[, prob := prob_treatment]
+  DATA[, d := 1 * (runif(n) < prob)]
+  DATA[, y := d * y1 + (1 - d) * y0]
+  DATA[, `:=`(y1 = NULL, y0 = NULL)]
+  attr(DATA, "seed") <- seed
+  DATA
+}
+
